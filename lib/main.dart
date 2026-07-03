@@ -168,7 +168,6 @@ final List<PrayerSection> sunsetSections = [
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // إعداد النافذة وملء الشاشة
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = const WindowOptions(
@@ -182,7 +181,7 @@ void main() async {
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
-    await windowManager.setFullScreen(true); // تفعيل وضع ملء الشاشة F11
+    await windowManager.setFullScreen(true);
   });
 
   runApp(const ChristianPrayerApp());
@@ -601,7 +600,7 @@ class _SunsetPrayerDetailsScreenState extends State<SunsetPrayerDetailsScreen> {
                                 Text(
                                   section.body,
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 60,
                                     color: Color(0xFFFFFFFF),
                                     height: 1.8,
                                     fontWeight: FontWeight.w400,
