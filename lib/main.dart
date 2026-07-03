@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:window_manager/window_manager.dart';
 
 // نموذج يمثل قسم من أقسام صلاة الغروب الكنسية للأجبية المقدسة
 class PrayerSection {
@@ -10,7 +11,7 @@ class PrayerSection {
   PrayerSection({required this.id, required this.title, required this.body});
 }
 
-// مصفوفة تحتوي على كامل أقسام صلاة الغروب بالتفصيل الطقسي الكنسي الكامل
+// مصفوفة تحتوي على كامل أقسام صلاة الغروب بالتفصيل الطقسي الكنسي الكامل - مع body فارغ
 final List<PrayerSection> sunsetSections = [
   PrayerSection(
     id: 'sunset_01',
@@ -164,7 +165,26 @@ final List<PrayerSection> sunsetSections = [
   ),
 ];
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // إعداد النافذة وملء الشاشة
+  await windowManager.ensureInitialized();
+
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(1200, 800),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.hidden,
+  );
+
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+    await windowManager.setFullScreen(true); // تفعيل وضع ملء الشاشة F11
+  });
+
   runApp(const ChristianPrayerApp());
 }
 
@@ -392,7 +412,12 @@ class _SunsetPrayerDetailsScreenState extends State<SunsetPrayerDetailsScreen> {
 
   void _handleKeyEvent(KeyEvent event) {
     if (event is KeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      // تفعيل مفتاح F11 لتبديل وضع ملء الشاشة
+      if (event.logicalKey == LogicalKeyboardKey.f11) {
+        windowManager.isFullScreen().then(
+          (isFullScreen) => windowManager.setFullScreen(!isFullScreen),
+        );
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         _changePage(1);
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         _changePage(-1);
@@ -571,16 +596,6 @@ class _SunsetPrayerDetailsScreenState extends State<SunsetPrayerDetailsScreen> {
                                 ).withOpacity(0.3),
                               ),
                               const SizedBox(height: 24),
-                              Text(
-                                section.body,
-                                style: const TextStyle(
-                                  fontSize: 60,
-                                  color: Color(0xFFFFFFFF),
-                                  height: 1.8,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
                             ],
                           ),
                         ),
